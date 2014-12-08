@@ -1,0 +1,16 @@
+<parameters>
+  <TIPath name="">../data/DS-NonStationary/TI5</TIPath>
+  <hardDataPath name="">../data/DS-NonStationary/hardData200</hardDataPath>
+  <hardDataPoints name="">200</hardDataPoints>
+  <searchEllipseDimX name="">50</searchEllipseDimX>
+  <searchEllipseDimY name="">50</searchEllipseDimY>
+  <searchEllipseDimZ name="">1</searchEllipseDimZ>
+  <maxConditionNum name="">15</maxConditionNum>
+  <minConditionNum name="">12</minConditionNum>
+  <useFinite name="">1</useFinite>
+  <gridSizeX name="">100</gridSizeX>
+  <gridSizeY name="">200</gridSizeY>
+  <r name="">5</r>
+  <usePenalty name="">1</usePenalty>
+  <R name="">20</R>
+</parameters>
