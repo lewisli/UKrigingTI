@@ -13,10 +13,10 @@
 #include <cuda_runtime.h>
 #include "cutil_math.h"
 #include "vector_functions.h"
-
+#include <algorithm>
 // A wrapper for making GPU calls that lists the error and location
 #define gpuErrchk(ans) { gpuAssert((ans), __FILE__, __LINE__); }
-inline void gpuAssert(cudaError_t code, char *file, int line, bool abort=true)
+inline void gpuAssert(const cudaError_t code, const char *file, int line, bool abort=true)
 {
 	if (code != cudaSuccess)
 	{

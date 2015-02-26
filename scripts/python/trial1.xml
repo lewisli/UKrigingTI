@@ -1,0 +1,17 @@
+<parameters>
+  <TIRoot name="TIRoot">../data/WLake/<TIName0>TI1</TIName0><TIName1>TI2</TIName1><TIName2>TI3</TIName2></TIRoot>
+  <hardDataPath name="hardDataPath">../data/WLake/hardData25</hardDataPath>
+  <hardDataPoints name="hardDataPoints">25</hardDataPoints>
+  <searchEllipseX name="searchEllipseX">25</searchEllipseX>
+  <searchEllipseY name="searchEllipseY">25</searchEllipseY>
+  <searchEllipseZ name="searchEllipseZ">1</searchEllipseZ>
+  <minConditionNum name="minCondNum">1</minConditionNum>
+  <maxConditionNum name="maxCondNum">50</maxConditionNum>
+  <gridSizeX name="gridSizeX">260</gridSizeX>
+  <gridSizeY name="gridSizeY">300</gridSizeY>
+  <UseFiniteKrig name="UseFiniteKrig">0</UseFiniteKrig>
+  <UseMultipleTI name="UseMultipleTI">1</UseMultipleTI>
+  <usePenalty name="usePenalty">0</usePenalty>
+  <r name="r">5</r>
+  <R name="R">20</R>
+</parameters>
