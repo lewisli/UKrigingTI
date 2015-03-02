@@ -114,6 +114,9 @@ void KrigingSolver::processParameters(char *parameterPath)
     parameters.numHardPts = std::atoi(node->value());
     node = doc.first_node()->first_node("UseMultipleTI");
     parameters.useMultipleTI = bool(std::atoi(node->value()));
+    node = doc.first_node()->first_node("ResultsPath");
+    parameters.resultsPath = std::string(node->value());
+
 }
 
 bool KrigingSolver::createFolder(std::string path)
@@ -121,15 +124,23 @@ bool KrigingSolver::createFolder(std::string path)
     // Check if path exists, if not create it
     if (stat(path.c_str(), &sb) == -1)
     {
-        int status;
-        std::cout << "Creating Folder " << path << std::endl;
-        status = mkdir(path.c_str(),
-                       S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-        if (status == -1)
-        {
-            std::cout << "Error Creating Output Folder. Check Permissions"
-                      << std::endl;
-            return false;
+        size_t pre=0,pos;
+        std::string dir;
+        int mdret;
+
+        if(path[path.size()-1]!='/'){
+            // force trailing / so we can handle everything in loop
+            path+='/';
+        }
+
+        while((pos=path.find_first_of('/',pre))!=std::string::npos){
+            dir=path.substr(0,pos++);
+            pre=pos;
+            if(dir.size()==0) continue; // if leading / first time is 0 length
+            if((mdret=mkdir(dir.c_str(),S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH))
+                    && errno!=EEXIST){
+                return true;
+            }
         }
         return true;
     }
@@ -140,88 +151,13 @@ bool KrigingSolver::createFolder(std::string path)
 std::string KrigingSolver::generateOutputFilename(const TIKrigingParam
                                                   &parameters)
 {
-    std::string outputFilename, caseName, TIName;
+    unsigned found = parameters.resultsPath.find_last_of("/\\");
+    std::string resultsDir = parameters.resultsPath.substr(0,found);
 
-    // Assume that data is in ../data/CaseName/TI folder
-    std::size_t foundStart = parameters.TIRoot.find("/");
-    caseName = parameters.TIRoot.substr(foundStart+1);
-    foundStart = caseName.find("/");
-    caseName = caseName.substr(foundStart+1);
-    foundStart = caseName.find("/");
-    caseName = caseName.substr(0,foundStart+1);
+    if (!createFolder(resultsDir))
+          exit(-1);
 
-    if (parameters.useMultipleTI)
-    {
-        TIName = "MultiTI";
-        TIName.append(stoi(parameters.TINames.size()));
-    }
-    else
-    {
-        TIName = parameters.TINames[0];
-    }
-
-    outputFilename = "../results/";
-    outputFilename.append(caseName);
-
-    // Create results/caseName/ Folder
-    if (!createFolder(outputFilename))
-        exit(-1);
-
-    int numHardDataPts = parameters.numHardPts;
-    outputFilename.append(stoi(numHardDataPts));
-    outputFilename.append("/");
-
-    // Create results/caseName/ Folder
-    if (!createFolder(outputFilename))
-        exit(-1);
-
-    // If we are using both finite correction and minimum
-    if (parameters.useFinite && parameters.minConditionNum > 1)
-    {
-        outputFilename.append("Finite-MinCond/");
-        if (!createFolder(outputFilename))
-            exit(-1);
-    }
-    else if (parameters.useFinite)
-    {
-        outputFilename.append("Finite/");
-        if (!createFolder(outputFilename))
-            exit(-1);
-    }
-    else if (parameters.minConditionNum > 1)
-    {
-        outputFilename.append("MinConditioning/");
-        if (!createFolder(outputFilename))
-            exit(-1);
-    }
-    else
-    {
-        outputFilename.append("No-Corrections/");
-        if (!createFolder(outputFilename))
-            exit(-1);
-    }
-
-    std::string penaltyStatus = parameters.usePenalty ? "On": "Off";
-
-    TIName.append("_");
-    TIName.append("Penalty");
-    TIName.append(penaltyStatus);
-    TIName.append("_");
-    TIName.append("MinCond");
-    TIName.append(stoi(parameters.minConditionNum));
-    TIName.append("_");
-    TIName.append("MaxCond");
-    TIName.append(stoi(parameters.maxConditionNum));
-    TIName.append("_");
-    TIName.append("Search");
-    TIName.append(stoi(parameters.searchEllipseDim.x));
-    TIName.append(".dat");
-
-    outputFilename.append(TIName);
-
-    std::cout << outputFilename << std::endl;
-
-    return outputFilename;
+    return parameters.resultsPath;
 }
 
 KrigingSolver::~KrigingSolver()
@@ -233,7 +169,8 @@ KrigingSolver::~KrigingSolver()
 }
 
 void KrigingSolver::computeWeights(int numPts, VectorXf &w,
-                                   MatrixXf &A, VectorXf &b, bool usePenalty, GPUKriging *gpuKrig)
+                                   MatrixXf &A, VectorXf &b, bool usePenalty,
+                                   GPUKriging *gpuKrig)
 {
     assert(numPts <= gpuKrig->numDCFPts);
 
@@ -266,8 +203,7 @@ void KrigingSolver::computeWeights(int numPts, VectorXf &w,
     A(SOPSize,SOPSize) = 0;
     b(SOPSize) = h4[0];
 
-    // Failed Attempt at using decomposition to smooth out covariacnes
-
+    // Decomposition to smooth out covariacnes
     //	JacobiSVD<MatrixXf> svd(A, ComputeFullU | ComputeFullV);
     //	MatrixXf r = svd.singularValues();
     //

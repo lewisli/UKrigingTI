@@ -1,0 +1,20 @@
+<parameters>
+  <UKTIRootDir name="UKTIRootDir">/home/lewisli/code-dev/UKrigingTI</UKTIRootDir>
+  <DataSetName name="DataSetName">WalkerLake</DataSetName>
+  <ResultsPath name="ResultsPath">/home/lewisli/code-dev/UKrigingTI/results/WalkerLake/400/hData0_result</ResultsPath>
+  <TIRoot name="TIRoot">/home/lewisli/code-dev/UKrigingTI/data/trainingImages/WalkerLake/<TIName0>TI1</TIName0></TIRoot>
+  <hardDataPath name="hardDataPath">/home/lewisli/code-dev/UKrigingTI/data/hardData/WalkerLake/hData0</hardDataPath>
+  <hardDataPoints name="hardDataPoints">400</hardDataPoints>
+  <searchEllipseX name="searchEllipseX">25</searchEllipseX>
+  <searchEllipseY name="searchEllipseY">25</searchEllipseY>
+  <searchEllipseZ name="searchEllipseZ">1</searchEllipseZ>
+  <minConditionNum name="minCondNum">20</minConditionNum>
+  <maxConditionNum name="maxCondNum">50</maxConditionNum>
+  <gridSizeX name="gridSizeX">260</gridSizeX>
+  <gridSizeY name="gridSizeY">300</gridSizeY>
+  <UseFiniteKrig name="UseFiniteKrig">1</UseFiniteKrig>
+  <UseMultipleTI name="UseMultipleTI">0</UseMultipleTI>
+  <usePenalty name="usePenalty">0</usePenalty>
+  <r name="r">5</r>
+  <R name="R">20</R>
+</parameters>

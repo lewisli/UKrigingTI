@@ -35,6 +35,7 @@ typedef struct
 	bool usePenalty;
 	bool useFinite;
 	bool useMultipleTI;
+    std::string resultsPath;
 }TIKrigingParam;
 
 struct datConfig

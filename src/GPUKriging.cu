@@ -478,7 +478,8 @@ void GPUKriging::loadGrid(const std::string &path, short2 &gridSize,
 	}
 	else
 	{
-		std::cerr << "Unable to open file" << std::endl;
+        std::cerr << "Unable to open file from " <<
+                  path << std::endl;
 	}
 }
 

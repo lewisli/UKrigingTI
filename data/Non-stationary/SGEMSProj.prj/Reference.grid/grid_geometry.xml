@@ -1,9 +1,0 @@
-<!DOCTYPE gridGeometry>
-<Grid type="Cgrid" name="Reference">
- <Geometry dx="1" dy="1" dz="1" rotation_z_angle="0" ox="0" oy="0" nx="200" oz="0" ny="200" nz="1"/>
- <Properties>
-  <GsTLGridProperty filepath="properties/property__Grid__real0.sgems" parameters="&lt;parameters>&lt;algorithm name=&quot;sgsim&quot;/>&lt;Grid_Name region=&quot;&quot; value=&quot;Reference&quot;/>&lt;Property_Name value=&quot;Grid&quot;/>&lt;Nb_Realizations value=&quot;1&quot;/>&lt;Seed value=&quot;14071789&quot;/>&lt;Kriging_Type value=&quot;Ordinary Kriging (OK)&quot;/>&lt;Variogram nugget=&quot;0.1&quot; structures_count=&quot;1&quot;>&lt;structure_1 contribution=&quot;0.9&quot; type=&quot;Spherical&quot;>&lt;ranges medium=&quot;50&quot; min=&quot;1&quot; max=&quot;100&quot;/>&lt;angles x=&quot;0&quot; y=&quot;0&quot; z=&quot;0&quot;/>&lt;/structure_1>&lt;/Variogram>&lt;Assign_Hard_Data value=&quot;0&quot;/>&lt;Hard_Data region=&quot;&quot; grid=&quot;&quot; property=&quot;&quot;/>&lt;Max_Conditioning_Data value=&quot;12&quot;/>&lt;Max_Conditioning_Simul_Data value=&quot;12&quot;/>&lt;Search_Ellipsoid value=&quot;50 50 1  0 0 0&quot;/>&lt;AdvancedSearch use_advanced_search=&quot;0&quot;/>&lt;Use_Target_Histogram value=&quot;0&quot;/>&lt;/parameters>" type="Continuous" name="Grid__real0"/>
- </Properties>
- <Regions/>
- <PropertyGroups/>
-</Grid>

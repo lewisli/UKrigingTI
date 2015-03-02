@@ -27,8 +27,8 @@ set(GENCODE ${GENCODE} -gencode=arch=compute_20,code=sm_20)
 set(GENCODE ${GENCODE} -gencode=arch=compute_10,code=sm_10)
 
 # debug options
-set(CUDA_NVCC_FLAGS_DEBUG "-G;-g")
-set(CUDA_NVCC_FLAGS_RELEASE "-O2")
+#set(CUDA_NVCC_FLAGS_DEBUG "-G;-g")
+#set(CUDA_NVCC_FLAGS_RELEASE "-O2")
 
 SET(CUDA_SOURCE
 src/GPUKriging.cu
