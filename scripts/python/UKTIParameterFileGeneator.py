@@ -18,7 +18,8 @@ class UKTIParamterFileGenerator:
 	def __init__(self, par):
 		self.par = par
 
-	def writefile(self, outputPath):
+	def writefile(self, outputPath, par):
+		self.par = par
 		root = etree.Element("parameters")
 		root.clear()
 
@@ -111,10 +112,10 @@ class UKTIParamterFileGenerator:
 		with open(outputPath, "w") as text_file:
 			text_file.write(etree.tostring(root, pretty_print=True))
 
-	def createSlurmfile(self,name,email,nodes,ppn,time,content,nodetype='defq'):
+	def createSlurmfile(self,name,email,nodes,ppn,time,pbsdir,content,nodetype='defq'):
 	    #This function creates the batch job for the Slurm scheduler
 
-		pbs_dirt = 'pbs'
+		pbs_dirt = pbsdir
 
 		# Allow for sub hour timing
 		hours = int(math.floor(time))
@@ -128,7 +129,7 @@ class UKTIParamterFileGenerator:
 		lines.append('#SBATCH --cpus-per-task=%d '% (ppn))
 		lines.append('#SBATCH --time=%d:%02d:00' % (hours,minutes))
 		lines.append('#SBATCH --job-name=%s' % name)
-		lines.append('#SBATCH -o %s/%s.log' % (pbs_dirt,name))
+		lines.append('#SBATCH -o %s%s.log' % (pbs_dirt,name))
 		lines.append('#SBATCH --ntasks-per-node=1') # 1 task per node, then it gives all cpus to task (OMP) 
 		if nodetype:
 		  lines.append('#SBATCH --partition=%s'%nodetype)
@@ -139,14 +140,14 @@ class UKTIParamterFileGenerator:
 		lines.append('cd %s' % os.environ.get('UKTIPATH'))
 		lines.append('srun -n %d bin/UKTI %s' %(ppn, content))
 
-		file = open('%s/%s' % (pbs_dirt,name),'w')
+		file = open('%s%s.sbatch' % (pbs_dirt,name),'w')
 		text = string.join(lines,'\n')
 		file.write(text)
 		file.close()
          
 def main(arg=None):
 
-    par = dict( DataDir = 'data/',
+	par = dict( DataDir = 'data/',
     			ResultsDir = 'results/',
     			TIDir = 'trainingImages/',
     			HDDir = 'hardData/',
@@ -162,15 +163,34 @@ def main(arg=None):
     			UseFiniteKrig = True,
     			UseMultipleTI = False,
     			UsePenaltyCorrection = False,
-    			HardDataName = 'hData',
     			rPenalty = 5,
     			RPenalty = 20,
     			TINum  = 1,
         )
 
-    Gen = UKTIParamterFileGenerator(par)
-    Gen.writefile('TrialTest.xml')
-    Gen.createSlurmfile('TestJobName','lewisli@stanford.edu',1,1,2,'pbs/TrialText.xml','defq')
+	pbs_path = par['UKTIRootDir'] + '/pbs/'
+	pbs_dirt = pbs_path + par['DataSetName'] + '/'
+	if not os.path.exists(pbs_dirt):
+		os.makedirs(pbs_dirt)
+
+	Gen = UKTIParamterFileGenerator(par)
+
+	joblistf = open(pbs_dirt + 'JobList','w')
+
+	JobList = []
+	for i in range(5):
+		# Change HDataName
+		par['HDataName'] = 'hData' + str(i+1)
+		JobName = par['DataSetName'] + '_' + str(par['NumHardData']) + '_' + str(i+1)
+		JobPath = pbs_dirt + JobName + '.xml'
+		Gen.writefile(JobPath,par)
+		Gen.createSlurmfile(JobName,'lewisli@stanford.edu',1,1,2,pbs_dirt,JobPath,'defq')
+
+		joblistf.write(pbs_dirt + JobName)
+		joblistf.write('\n')
+
+	joblistf.close()
+
 
 if __name__ == "__main__":
     main(sys.argv[1:])
