@@ -54,7 +54,7 @@ class UKTIParamterFileGenerator:
 		# Write path where hard data is stored
 		hardDataPathChild = etree.SubElement(root, "hardDataPath")
 		hardDataPathChild.set("name","hardDataPath")
-		hardDataPathChild.text = DataDir + self.par['HDDir'] + self.par['DataSetName'] + '/' + self.par['HDataName']
+		hardDataPathChild.text = DataDir + self.par['HDDir'] + self.par['DataSetName'] + '/' + str(self.par['NumHardData']) + '/' + self.par['HDataName']
 		hardDataNumChild = etree.SubElement(root, "hardDataPoints")
 		hardDataNumChild.set("name","hardDataPoints")
 		hardDataNumChild.text = str(self.par['NumHardData'])
@@ -126,6 +126,7 @@ class UKTIParamterFileGenerator:
 		lines.append('#!/bin/bash')
 		lines.append('#SBATCH -J %s' % (name))
 		lines.append('#SBATCH --nodes=%d' % (nodes))
+		lines.append('#SBATCH --gres=gpu:1')
 		lines.append('#SBATCH --cpus-per-task=%d '% (ppn))
 		lines.append('#SBATCH --time=%d:%02d:00' % (hours,minutes))
 		lines.append('#SBATCH --job-name=%s' % name)
@@ -136,6 +137,7 @@ class UKTIParamterFileGenerator:
 		if email:
 		    lines.append('#SBATCH --mail-type=FAIL')
 		    lines.append('#SBATCH --mail-user=%s' % email)
+		lines.append('#SBATCH --export=ALL')
 		lines.append('#-----------')
 		lines.append('cd %s' % os.environ.get('UKTIPATH'))
 		lines.append('srun -n %d bin/UKTI %s' %(ppn, content))
@@ -159,7 +161,7 @@ def main(arg=None):
     			SearchEllipseDim = 25,
     			MinCondNum = 20,
     			MaxCondNum = 50,
-    			NumHardData = 400,
+    			NumHardData = 600,
     			UseFiniteKrig = True,
     			UseMultipleTI = False,
     			UsePenaltyCorrection = False,
@@ -178,7 +180,7 @@ def main(arg=None):
 	joblistf = open(pbs_dirt + 'JobList','w')
 
 	JobList = []
-	for i in range(5):
+	for i in range(50):
 		# Change HDataName
 		par['HDataName'] = 'hData' + str(i+1)
 		JobName = par['DataSetName'] + '_' + str(par['NumHardData']) + '_' + str(i+1)
@@ -186,7 +188,7 @@ def main(arg=None):
 		Gen.writefile(JobPath,par)
 		Gen.createSlurmfile(JobName,'lewisli@stanford.edu',1,1,2,pbs_dirt,JobPath,'defq')
 
-		joblistf.write(pbs_dirt + JobName)
+		joblistf.write(pbs_dirt + JobName + '.sbatch')
 		joblistf.write('\n')
 
 	joblistf.close()

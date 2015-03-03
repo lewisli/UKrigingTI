@@ -1,0 +1,70 @@
+#!/bin/bash
+# Smart submission - submit jobs in parallel, based on cluster utilization
+# Forked from brodick's ParallelSubmit
+
+## file to read jobs to submit from
+list_file=$1
+echo "Reading from ${list_file}"
+
+## file to write running output to
+report_file=$2
+
+## jobs to submit at a time
+num_to_submit=1
+
+## Maximum number of running jobs
+max_jobs=24
+max_queue_jobs=4
+
+## record date
+date >> ${report_file}
+
+user=`whoami`
+echo "Looking for " ${user}"'s jobs..."
+
+## initialize outer counter
+outer_count=0
+IFS=$'\n'
+for next in `cat ${list_file}`
+do
+  # always submit in groups of num_to_submit
+  if [ ${outer_count} -gt ${num_to_submit} ]
+  then 
+    outer_count=0
+    count=0
+
+    # check to see if jobs are finished
+    while [ ${count} -lt 2 ]
+    do
+      # get running jobs
+      my_running_jobs=$(squeue | grep `whoami` | awk '{print $5}'| grep 'R')
+      my_pending_jobs=$(squeue | grep `whoami` | awk '{print $5}'| grep 'PD')
+      num_running_jobs=$(grep -o "R"  <<< $my_running_jobs | wc -l)
+      num_pending_jobs=$(grep -o "PD" <<< $my_pending_jobs | wc -l)
+      echo "You have: ${num_running_jobs} running jobs, and ${num_pending_jobs} pending jobs"
+      if (( $(echo "${num_running_jobs} < ${max_jobs}" | bc -l) ))
+      then
+        if (( $(echo "${num_pending_jobs} < ${max_queue_jobs}" | bc -l) ))
+	then
+            count=$(echo "scale=3; ${count} + 1" | bc)
+            echo "looks ready to submit.  count: ${count}"
+	fi
+      fi	    
+      sleep 4s
+    done
+  fi
+
+  # submit job, and write submission to file for reference
+  if [ ${outer_count} -eq 1 ]
+  then
+    echo "submitting next ${num_to_submit}"
+  fi
+
+  echo "Submitting Job:" ${next}
+  echo "${next}" >> ${report_file}
+  sbatch "${next}"
+  outer_count=$(echo "scale=3; ${outer_count} + 1" | bc)
+
+done
+
+

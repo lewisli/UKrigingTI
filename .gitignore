@@ -60,3 +60,4 @@ results/
 bin/
 data/
 *pbs/
+*.out
