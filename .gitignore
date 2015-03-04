@@ -61,3 +61,4 @@ bin/
 data/
 *pbs/
 *.out
+*.csv
