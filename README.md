@@ -18,4 +18,4 @@ Parameters for the program are passed using an XML format.
 
     ./UKTI parameters.xml 
 
-Refer to [here](../scripts/python/TrialTest.xml) for an example of a parameter xml file. Furthermore, this [python script](../scripts/python/UKTIParameterFileGeneator.py) can be used to generate parameter files.
+Refer to [here](scripts/python/TrialTest.xml) for an example of a parameter xml file. Furthermore, this [python script](scripts/python/UKTIParameterFileGeneator.py) can be used to generate parameter files.
